@@ -1,0 +1,613 @@
+{
+  "version": 1,
+  "updated": "2026-09-15",
+  "categories": [
+    {
+      "id": "nature",
+      "name": "Nature & Bioacoustics",
+      "blurb": "Identify plants, birds, animals, and bats from photos or sound.",
+      "models": [
+        {
+          "id": "birdnet",
+          "name": "BirdNET V2.4",
+          "task": "Bird species ID from audio",
+          "input": "audio",
+          "size": "50.5 MB (FP32 TFLite)",
+          "license": "CC BY-NC-SA 4.0 (weights), MIT (code)",
+          "license_note": "Weights are non-commercial. Education and research count as non-commercial.",
+          "node_sdk": "none",
+          "node_note": "No official SDK. Wrap the TFLite model with tfjs-node or convert to ONNX.",
+          "links": {
+            "repo": "https://github.com/birdnet-team/BirdNET-Analyzer",
+            "docs": "https://birdnet-team.github.io/BirdNET-Analyzer/models.html"
+          },
+          "summary": "6,000+ bird species from audio, worldwide. The standard for on-device bird sound ID — runs on a Raspberry Pi, even a Pi Zero 2 W. 6,522 classes, 0.826 GFLOPs per inference. Ready-made deployments: BirdNET-Pi, BirdNET-Go."
+        },
+        {
+          "id": "perch",
+          "name": "Google Perch",
+          "task": "Bird vocalization ID + audio embeddings",
+          "input": "audio",
+          "size": "Laptop-class",
+          "license": "Apache-2.0",
+          "node_sdk": "onnx",
+          "node_note": "Community TFLite/ONNX port; run with onnxruntime-node.",
+          "links": {
+            "repo": "https://github.com/google-research/perch",
+            "huggingface": "https://huggingface.co/cgeorgiaw/Perch"
+          },
+          "summary": "~15,000 bird species globally, higher accuracy than BirdNET, Apache-2.0 weights. Outputs 1280-d embeddings you can few-shot match against a handful of labeled clips to build custom classifiers."
+        },
+        {
+          "id": "inat-vision-small",
+          "name": "iNaturalist Vision Small",
+          "task": "Nature photo ID (plants, animals, fungi)",
+          "input": "photo",
+          "size": "~22 MB (int8 TFLite)",
+          "license": "MIT",
+          "node_sdk": "onnx",
+          "node_note": "Run the TFLite via tfjs-node or convert to ONNX.",
+          "links": {
+            "repo": "https://github.com/inaturalist/model-files"
+          },
+          "summary": "iNaturalist's published on-device classifier: ~500 taxa fully offline, plus a 0.7 MB geolocation model that down-ranks species unlikely at your GPS point. Same model family that powers the Seek app. The full 72,000-taxon production model stays private."
+        },
+        {
+          "id": "megadetector",
+          "name": "MegaDetector V6",
+          "task": "Detect animals, people, vehicles in camera photos",
+          "input": "photo",
+          "size": "2.3M params (compact yolov10c)",
+          "license": "MIT (some variants)",
+          "license_note": "License varies by variant: MDV6-mit-yolov9-c is MIT; others are Apache-2.0 or AGPL-3.0. Check the Model Zoo.",
+          "node_sdk": "onnx",
+          "node_note": "Python API today; ONNX exports make onnxruntime-node viable.",
+          "links": {
+            "repo": "https://github.com/microsoft/MegaDetector",
+            "docs": "https://microsoft.github.io/MegaDetector/model_zoo/"
+          },
+          "summary": "Microsoft AI for Good's camera-trap detector: bounding boxes for 'is something here', not species names. Compact variant is ~2% of V5's size, CPU-friendly, runs on solar field units. Pair with a classifier: detect, crop, classify."
+        },
+        {
+          "id": "batdetect2",
+          "name": "BatDetect2",
+          "task": "Bat call detection + species ID (Europe)",
+          "input": "audio",
+          "size": "~50 MB class",
+          "license": "Custom research license",
+          "license_note": "Free for non-commercial research; check the repo.",
+          "node_sdk": "none",
+          "node_note": "Python only; ONNX conversion needed for Node use.",
+          "links": {
+            "repo": "https://github.com/macaodha/batdetect2"
+          },
+          "summary": "Bat echolocation call detection and species classification for European species. Audio in, annotated call spans plus species out."
+        },
+        {
+          "id": "plantnet-300k",
+          "name": "Pl@ntNet-300K",
+          "task": "Train your own plant classifier",
+          "input": "dataset",
+          "size": "300K images, ~1,000 species",
+          "license": "BSD-2-Clause (code), CC-BY-4.0 (dataset)",
+          "node_sdk": "none",
+          "node_note": "Train in Python, export ONNX, serve with onnxruntime-node.",
+          "links": {
+            "repo": "https://github.com/plantnet/PlantNet-300K",
+            "dataset": "https://zenodo.org/records/4726653"
+          },
+          "summary": "Research-grade plant photo dataset plus PyTorch training code (NeurIPS 2021). Deliberately long-tailed and label-ambiguous, so models trained on it resemble real-world conditions."
+        }
+      ]
+    },
+    {
+      "id": "stt-tts",
+      "name": "Speech: STT & TTS",
+      "blurb": "Transcribe speech to text and synthesize text to speech, fully offline.",
+      "models": [
+        {
+          "id": "whisper-cpp",
+          "name": "Whisper.cpp",
+          "task": "Speech to text, 90+ languages",
+          "input": "audio",
+          "size": "39M-1.5B params (pick your tier)",
+          "license": "MIT",
+          "node_sdk": "native",
+          "node_note": "npm wrappers: nodejs-whisper, smart-whisper; or spawn the CLI.",
+          "links": {
+            "repo": "https://github.com/ggerganov/whisper.cpp"
+          },
+          "summary": "C/C++ port of OpenAI Whisper with word timestamps. Tiny/base/small tiers (39M-244M params) run real-time on phones and Pis; quantized ggml files shrink further."
+        },
+        {
+          "id": "sherpa-onnx",
+          "name": "sherpa-onnx",
+          "task": "STT + TTS + VAD + diarization + denoising, one toolkit",
+          "input": "audio",
+          "size": "Varies per model",
+          "license": "Apache-2.0",
+          "node_sdk": "native",
+          "node_note": "npm i sherpa-onnx-node — official Node addon covering every task.",
+          "links": {
+            "repo": "https://github.com/k2-fsa/sherpa-onnx",
+            "npm": "https://www.npmjs.com/package/sherpa-onnx-node",
+            "docs": "https://k2-fsa.github.io/sherpa/onnx/"
+          },
+          "summary": "The swiss-army knife of offline speech: streaming and offline STT (Whisper, Moonshine, SenseVoice, Zipformer, Paraformer), TTS (VITS, Kokoro, Matcha), speaker ID, diarization, VAD, keyword spotting, audio tagging, speech denoising, and two-speaker separation — all via ONNX Runtime on x86/ARM/Pi/NPU."
+        },
+        {
+          "id": "moonshine",
+          "name": "Moonshine",
+          "task": "STT designed for edge devices",
+          "input": "audio",
+          "size": "27M-61M params",
+          "license": "MIT (most models)",
+          "license_note": "Some legacy non-English non-streaming models stay under the non-commercial Moonshine Community License.",
+          "node_sdk": "native",
+          "node_note": "Available as a sherpa-onnx backend.",
+          "links": {
+            "repo": "https://github.com/moonshine-ai/moonshine",
+            "huggingface": "https://huggingface.co/UsefulSensors/moonshine"
+          },
+          "summary": "Edge-first STT from Useful Sensors. Variable-length windows instead of Whisper's fixed 30-second chunks, so short utterances transcribe several times faster. Tiny is 27M params — microcontroller and browser class."
+        },
+        {
+          "id": "sensevoice",
+          "name": "SenseVoice Small",
+          "task": "STT + emotion recognition + audio events in one pass",
+          "input": "audio",
+          "size": "~230 MB (int8 ONNX)",
+          "license": "MIT (code), FunASR v1.1 (weights)",
+          "license_note": "FunASR Model License v1.1 permits commercial use with attribution.",
+          "node_sdk": "native",
+          "node_note": "Available as a sherpa-onnx backend.",
+          "links": {
+            "repo": "https://github.com/FunAudioLLM/SenseVoice",
+            "huggingface": "https://huggingface.co/FunAudioLLM/SenseVoiceSmall"
+          },
+          "summary": "Alibaba's multi-task STT: transcription plus emotion recognition plus audio event detection (laughter, music, applause) in a single pass. Mandarin, Cantonese, English, Japanese, Korean. Very fast for its capability."
+        },
+        {
+          "id": "vosk",
+          "name": "Vosk",
+          "task": "Streaming speech to text, 20+ languages",
+          "input": "audio",
+          "size": "~50 MB models",
+          "license": "Apache-2.0",
+          "node_sdk": "native",
+          "node_note": "Official vosk npm binding.",
+          "links": {
+            "repo": "https://github.com/alphacep/vosk-api",
+            "npm": "https://www.npmjs.com/package/vosk"
+          },
+          "summary": "Long-established streaming offline STT that runs on Raspberry Pi and Android with ~50 MB per-language models. Stable, boring in the best way."
+        },
+        {
+          "id": "kokoro",
+          "name": "Kokoro",
+          "task": "Text to speech, frontier quality at 82M params",
+          "input": "text",
+          "size": "82M params (~92 MB quantized ONNX)",
+          "license": "Apache-2.0",
+          "node_sdk": "native",
+          "node_note": "npm i kokoro-js — runs in Node and browser WASM.",
+          "links": {
+            "npm": "https://www.npmjs.com/package/kokoro-js",
+            "huggingface": "https://huggingface.co/onnx-community/Kokoro-82M-ONNX"
+          },
+          "summary": "Frontier TTS at 82M params — best quality-per-size available, won an OpenAI TTS arena against much larger models. kokoro-js runs it in the browser (WASM) and Node."
+        },
+        {
+          "id": "piper",
+          "name": "Piper",
+          "task": "Fast local TTS, many voices and languages",
+          "input": "text",
+          "size": "~60 MB per voice",
+          "license": "MIT (original), GPL-3.0 (active fork)",
+          "license_note": "Original rhasspy/piper is MIT but archived; active development is OHF-Voice/piper1-gpl under GPL-3.0. Each voice carries its own terms — check its MODEL_CARD.",
+          "node_sdk": "onnx",
+          "node_note": "VITS/Piper voices work via sherpa-onnx-node, or spawn the binary.",
+          "links": {
+            "repo": "https://github.com/OHF-Voice/piper1-gpl"
+          },
+          "summary": "One small ONNX model per voice, dozens of languages, real-time on a Raspberry Pi 4. Powers Home Assistant's voice pipeline and the NVDA screen reader."
+        },
+        {
+          "id": "melotts",
+          "name": "MeloTTS",
+          "task": "Multilingual text to speech",
+          "input": "text",
+          "size": "~200 MB class",
+          "license": "MIT",
+          "node_sdk": "onnx",
+          "node_note": "Python-first; ONNX exports exist for onnxruntime-node.",
+          "links": {
+            "repo": "https://github.com/myshell-ai/MeloTTS"
+          },
+          "summary": "High-quality multilingual TTS (English, Spanish, French, Chinese, Japanese, Korean) by MyShell, CPU-realtime capable. Bigger than Kokoro but strong multilingual coverage."
+        },
+        {
+          "id": "echogarden",
+          "name": "Echogarden",
+          "task": "Speech toolset: STT, TTS, alignment, translation, separation",
+          "input": "audio",
+          "size": "Varies per model",
+          "license": "MIT (mixed with GPL-3.0 components)",
+          "license_note": "Mixed licensing — check which components you use.",
+          "node_sdk": "native",
+          "node_note": "npm i echogarden — pure TypeScript.",
+          "links": {
+            "npm": "https://www.npmjs.com/package/echogarden",
+            "repo": "https://github.com/echogarden-project/echogarden"
+          },
+          "summary": "A speech toolset in pure TypeScript: STT (whisper.cpp-backed), TTS, forced alignment, speech translation, language detection, and source separation with a friendly API."
+        }
+      ]
+    },
+    {
+      "id": "speech-understanding",
+      "name": "Speech: Understanding & Cleanup",
+      "blurb": "Who spoke, when, and how cleanly — VAD, diarization, denoising, wake words.",
+      "models": [
+        {
+          "id": "silero-vad",
+          "name": "Silero VAD",
+          "task": "Voice activity detection",
+          "input": "audio",
+          "size": "~1 MB",
+          "license": "MIT",
+          "node_sdk": "native",
+          "node_note": "@ricky0123/vad-node, or raw ONNX via onnxruntime-node.",
+          "links": {
+            "repo": "https://github.com/snakers4/silero-vad"
+          },
+          "summary": "The standard 'is someone speaking' gate before STT. ~1 MB ONNX, 30 ms chunks, 16k/8k sample rates, extremely fast on CPU. Used by everyone."
+        },
+        {
+          "id": "pyannote",
+          "name": "pyannote.audio",
+          "task": "Speaker diarization — who spoke when",
+          "input": "audio",
+          "size": "Segmentation models are small; pipeline varies",
+          "license": "MIT (code)",
+          "license_note": "Segmentation models are gated on Hugging Face — accept terms per model card.",
+          "node_sdk": "onnx",
+          "node_note": "Python-first; community ONNX exports exist for onnxruntime-node.",
+          "links": {
+            "repo": "https://github.com/pyannote/pyannote-audio"
+          },
+          "summary": "The research standard for speaker diarization: who spoke when, overlapped speech detection, and speaker embeddings."
+        },
+        {
+          "id": "deepfilternet",
+          "name": "DeepFilterNet",
+          "task": "Streaming noise suppression",
+          "input": "audio",
+          "size": "Small, real-time at 48 kHz",
+          "license": "Source-available, restrictions at scale",
+          "license_note": "Free for most uses; commercial terms apply at scale. Verify the repo before shipping.",
+          "node_sdk": "onnx",
+          "node_note": "Similar models (GTCRN, DPDFNet) ship in sherpa-onnx-node's denoiser.",
+          "links": {
+            "repo": "https://github.com/Rikorose/DeepFilterNet"
+          },
+          "summary": "Real-time speech denoising (DeepFilterNet3) with a tiny footprint at 48 kHz."
+        },
+        {
+          "id": "rnnoise",
+          "name": "RNNoise",
+          "task": "Classic noise suppression, tiny",
+          "input": "audio",
+          "size": "~1 MB",
+          "license": "BSD-3-Clause",
+          "node_sdk": "cli",
+          "node_note": "C library; community WASM builds exist, or shell out.",
+          "links": {
+            "repo": "https://github.com/xiph/rnnoise"
+          },
+          "summary": "The classic recurrent-network noise suppressor — battle-tested (Firefox shipped it in WebRTC for years) and runs anywhere, including embedded."
+        },
+        {
+          "id": "openwakeword",
+          "name": "openWakeWord",
+          "task": "Trainable wake-word detection",
+          "input": "audio",
+          "size": "~250 KB-2 MB models",
+          "license": "Apache-2.0",
+          "node_sdk": "onnx",
+          "node_note": "Python-first; ONNX models port to onnxruntime-node.",
+          "links": {
+            "repo": "https://github.com/dscripka/openwakeword"
+          },
+          "summary": "Wake-word detection ('Hey Jarvis'-style) on-device, with pre-trained models and a training pipeline for custom phrases."
+        },
+        {
+          "id": "3d-speaker",
+          "name": "3D-Speaker",
+          "task": "Speaker verification and identification",
+          "input": "audio",
+          "size": "Varies per model",
+          "license": "Apache-2.0",
+          "node_sdk": "onnx",
+          "node_note": "Python-first; ONNX exports for onnxruntime-node.",
+          "links": {
+            "repo": "https://github.com/modelscope/3D-Speaker"
+          },
+          "summary": "ModelScope's speaker verification/identification toolkit: embeddings, verification, cross-modal (audio-video) options."
+        }
+      ]
+    },
+    {
+      "id": "separation",
+      "name": "Audio: Source Separation & Stems",
+      "blurb": "Split a mixed track into isolated stems — vocals, drums, bass, other.",
+      "models": [
+        {
+          "id": "demucs",
+          "name": "Demucs",
+          "task": "Music stem separation, quality leader",
+          "input": "audio",
+          "size": "Laptop-class (CPU-viable offline)",
+          "license": "MIT",
+          "node_sdk": "native",
+          "node_note": "The demucs npm package is a JS/ONNX port of Meta's MIT-licensed Demucs.",
+          "links": {
+            "repo": "https://github.com/adefossez/demucs",
+            "npm": "https://www.npmjs.com/package/demucs"
+          },
+          "summary": "Meta's hybrid-transformer stem separator (vocals/drums/bass/other, or 6-stem splits). The quality leader for music demixing. A JavaScript+ONNX port exists on npm."
+        },
+        {
+          "id": "spleeter",
+          "name": "Spleeter",
+          "task": "Music stem separation, fast and light",
+          "input": "audio",
+          "size": "Light, CPU-fast",
+          "license": "MIT",
+          "node_sdk": "cli",
+          "node_note": "Python/TF-first; SavedModel to ONNX conversion is straightforward, or spawn the CLI.",
+          "links": {
+            "repo": "https://github.com/deezer/spleeter"
+          },
+          "summary": "Deezer's stem separator with 2/4/5-stem models. Older than Demucs and lower quality, but very light and long-proven."
+        },
+        {
+          "id": "open-unmix",
+          "name": "Open-Unmix",
+          "task": "Research reference stem separation (UMX)",
+          "input": "audio",
+          "size": "Varies per model",
+          "license": "MIT",
+          "node_sdk": "onnx",
+          "node_note": "umx.js demo runs the model in-browser via ONNX with quantization.",
+          "links": {
+            "repo": "https://github.com/sigsep/open-unmix-pytorch",
+            "docs": "https://sigsep.github.io/open-unmix/"
+          },
+          "summary": "SIGSEP's research reference for music source separation — the basis of much academic work, with a browser demo (umx.js) proving the ONNX path."
+        }
+      ]
+    },
+    {
+      "id": "transcription",
+      "name": "Audio: Music Transcription & Notation",
+      "blurb": "Audio to MIDI and notation — a thin but capable lane.",
+      "models": [
+        {
+          "id": "basic-pitch",
+          "name": "Basic Pitch",
+          "task": "Polyphonic audio to MIDI",
+          "input": "audio",
+          "size": "Small (TFLite/ONNX/CoreML exports)",
+          "license": "Apache-2.0",
+          "node_sdk": "native",
+          "node_note": "npm i @spotify/basic-pitch — official JS package.",
+          "links": {
+            "repo": "https://github.com/spotify/basic-pitch",
+            "npm": "https://www.npmjs.com/package/@spotify/basic-pitch"
+          },
+          "summary": "Spotify's polyphonic audio-to-MIDI converter: pitch bend, note onsets, works on any instrument including voice and birdsong. Ships TFLite/ONNX/CoreML exports — genuinely on-device."
+        },
+        {
+          "id": "mt3",
+          "name": "MT3",
+          "task": "Multi-instrument transcription to MIDI",
+          "input": "audio",
+          "size": "Research-grade (JAX)",
+          "license": "Apache-2.0",
+          "node_sdk": "none",
+          "node_note": "Python/JAX-first; no JS port; ONNX export would be a project.",
+          "links": {
+            "repo": "https://github.com/magenta/mt3"
+          },
+          "summary": "Google's multi-task multitrack transcription: multiple instruments simultaneously into MIDI with a single T5-style model — piano, drums, guitar, full ensembles."
+        },
+        {
+          "id": "chromaprint",
+          "name": "ChromaPrint",
+          "task": "Audio fingerprinting (recognition, not transcription)",
+          "input": "audio",
+          "size": "Compact fingerprints",
+          "license": "LGPL-2.1+",
+          "node_sdk": "cli",
+          "node_note": "C library; WASM builds exist, or shell out to fpcalc.",
+          "links": {
+            "repo": "https://github.com/acoustid/chromaprint"
+          },
+          "summary": "The AcoustID backend: identify what recording this is by fingerprint matching — Shazam-like ID for your own library, offline on the matching side."
+        }
+      ]
+    },
+    {
+      "id": "tagging",
+      "name": "Audio: Music & Sound Tagging",
+      "blurb": "What am I hearing — genre, instruments, mood, or any of 521 sounds.",
+      "models": [
+        {
+          "id": "yamnet",
+          "name": "YAMNet",
+          "task": "521 general sound classes (instruments, animals, machines)",
+          "input": "audio",
+          "size": "~4 MB TFLite",
+          "license": "Apache-2.0",
+          "node_sdk": "native",
+          "node_note": "TF.js ports run in Node and browser.",
+          "links": {
+            "hub": "https://tfhub.dev/google/yamnet/1",
+            "repo": "https://github.com/antonyharfield/tflite-models-audioset-yamnet"
+          },
+          "summary": "MobileNetV1-based sound classifier, 0.92M params, 16 kHz mono in, frame-level scores out, real-time on phones. The standard transfer-learning base for custom audio classifiers."
+        },
+        {
+          "id": "musicnn",
+          "name": "musicnn",
+          "task": "Music tags: genre, instruments, mood, tempo",
+          "input": "audio",
+          "size": "A few MB",
+          "license": "ISC",
+          "node_sdk": "onnx",
+          "node_note": "Python-first; small CNNs port to ONNX easily.",
+          "links": {
+            "repo": "https://github.com/jordipons/musicnn"
+          },
+          "summary": "Pre-trained music audio taggers trained on MagnaTagATune and the Million Song Dataset. Ask 'what's in this track' and get tags like guitar, techno, ambient, fast."
+        },
+        {
+          "id": "essentia",
+          "name": "Essentia",
+          "task": "Full audio analysis toolbox (key, chords, BPM, loudness, descriptors)",
+          "input": "audio",
+          "size": "Varies (C++ library + models)",
+          "license": "AGPL-3.0",
+          "license_note": "AGPL matters for commercial use — see their docs for dynamic-linking discussion.",
+          "node_sdk": "native",
+          "node_note": "npm i essentia.js — WASM builds.",
+          "links": {
+            "repo": "https://github.com/MTG/essentia",
+            "npm": "https://www.npmjs.com/package/essentia.js"
+          },
+          "summary": "MTG's C++ audio and music analysis toolbox: tonal, rhythm, loudness, spectral descriptors plus ML model inference. The 'everything else in audio analysis' entry."
+        },
+        {
+          "id": "detoxify",
+          "name": "Detoxify",
+          "task": "Text toxicity classification (bonus text lane)",
+          "input": "text",
+          "size": "Small BERT-class",
+          "license": "Apache-2.0",
+          "node_sdk": "onnx",
+          "node_note": "Python-first; transformers.js can load the same weights.",
+          "links": {
+            "repo": "https://github.com/unitaryai/detoxify"
+          },
+          "summary": "Toxicity classification for comments and moderation, trained on all three Jigsaw Toxic Comment challenges. Small BERT-class models."
+        }
+      ]
+    },
+    {
+      "id": "text-vision",
+      "name": "Text & Vision Extras",
+      "blurb": "OCR, upscaling, background removal — on-device lanes you might not have thought of.",
+      "models": [
+        {
+          "id": "tesseractjs",
+          "name": "Tesseract.js",
+          "task": "OCR, 100+ languages",
+          "input": "photo",
+          "size": "~few MB core (language data varies)",
+          "license": "Apache-2.0",
+          "node_sdk": "native",
+          "node_note": "npm i tesseract.js — pure JS WASM.",
+          "links": {
+            "npm": "https://www.npmjs.com/package/tesseract.js",
+            "repo": "https://tesseract.projectnaptha.com/"
+          },
+          "summary": "OCR in pure JavaScript — WASM port of Tesseract, 100+ languages, runs in browser and Node. The classic extract-text-from-images option."
+        },
+        {
+          "id": "upscaler",
+          "name": "UpscalerJS",
+          "task": "Image super-resolution",
+          "input": "photo",
+          "size": "Multiple model tiers",
+          "license": "MIT",
+          "node_sdk": "native",
+          "node_note": "npm i upscaler — browser and Node.",
+          "links": {
+            "npm": "https://www.npmjs.com/package/upscaler",
+            "repo": "https://github.com/thekevinscott/UpscalerJS"
+          },
+          "summary": "Image upscaling and super-resolution in JavaScript — multiple model sizes from fast to quality, browser and Node compatible."
+        },
+        {
+          "id": "imgly-background-removal",
+          "name": "imgly background-removal",
+          "task": "Background removal from images",
+          "input": "photo",
+          "size": "Segmentation model runs locally",
+          "license": "Custom (free for most uses)",
+          "license_note": "Commercial terms at scale — check the LICENSE.md.",
+          "node_sdk": "native",
+          "node_note": "npm i @imgly/background-removal.",
+          "links": {
+            "npm": "https://www.npmjs.com/package/@imgly/background-removal",
+            "repo": "https://github.com/imgly/background-removal-js"
+          },
+          "summary": "Background removal (people, products) in browser JavaScript by IMG.LY — the segmentation model runs locally, no server."
+        },
+        {
+          "id": "transformers-js",
+          "name": "Transformers.js",
+          "task": "Thousands of HF models in JavaScript",
+          "input": "varies",
+          "size": "Varies per model",
+          "license": "Apache-2.0",
+          "node_sdk": "native",
+          "node_note": "npm i @huggingface/transformers.",
+          "links": {
+            "npm": "https://www.npmjs.com/package/@huggingface/transformers",
+            "docs": "https://huggingface.co/docs/transformers.js"
+          },
+          "summary": "Not one model — the whole Hugging Face ecosystem in JavaScript: run thousands of ONNX-converted models (NLP, vision, audio, multimodal) in Node and the browser. If a model exists on HF as ONNX, this is your Node SDK for it."
+        }
+      ]
+    },
+    {
+      "id": "sdks",
+      "name": "One SDK, Many Models",
+      "blurb": "Platforms where one install gives you many capabilities.",
+      "models": [
+        {
+          "id": "desert-ant-core",
+          "name": "Desert Ant Core",
+          "task": "On-device SDK suite: STT, denoise, language ID, PII redaction, more",
+          "input": "varies",
+          "size": "Small focused models",
+          "license": "Source-available",
+          "license_note": "Desert Ant Labs Source-Available License — free for most apps, commercial license required at scale.",
+          "node_sdk": "native",
+          "node_note": "Per-model npm packages: npm i @desert-ant-labs/<model>. Node and browser WASM, plus Swift and Kotlin from one codebase.",
+          "links": {
+            "repo": "https://github.com/Desert-Ant-Labs/desert-ant-core",
+            "huggingface": "https://huggingface.co/desert-ant-labs"
+          },
+          "summary": "Polished on-device SDKs: speech recognition (Voz), speech enhancement (Clear), spoken language ID (Ear), PII redaction (Redact), emoji suggestion (Emo), topic tagging (Gist), filler-word detection (Uhm), and more — all offline, weights on Hugging Face."
+        },
+        {
+          "id": "pytorch-wildlife",
+          "name": "PyTorch-Wildlife",
+          "task": "MegaDetector + regional species classifiers, one API",
+          "input": "photo",
+          "size": "Varies per model",
+          "license": "MIT",
+          "node_sdk": "onnx",
+          "node_note": "Python API; ONNX exports make onnxruntime-node viable.",
+          "links": {
+            "repo": "https://github.com/microsoft/Pytorch-Wildlife"
+          },
+          "summary": "Microsoft AI for Good's unified framework hosting MegaDetector and regional species classifiers (Amazon rainforest, Galapagos) with one consistent Python API."
+        }
+      ]
+    }
+  ]
+}
