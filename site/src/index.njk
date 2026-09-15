@@ -7,6 +7,7 @@ permalink: index.html
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>On-Device AI Model Index</title>
+  <style>.filter-btn[aria-pressed="true"]{background:#000;color:#fff}</style>
   <link href="https://cdn.datatables.net/v/dt/dt-3.0.4/af-3.0.1/b-4.0.3/cr-3.0.2/cc-2.0.2/date-2.0.0/fc-6.0.0/fh-5.0.0/kt-3.0.0/r-4.0.3/rg-2.0.0/rr-2.0.0/sc-3.0.0/sb-2.0.1/sl-4.0.1/datatables.min.css" rel="stylesheet" integrity="sha384-KaNPuvSvJqdUngLoLKqaFK2ZDb2sPIRRkZA1kY2W/J5E0bKBAyLFeUXxQBREJ07E" crossorigin="anonymous">
 </head>
 <body>
@@ -74,11 +75,50 @@ permalink: index.html
       order: [[1, 'asc'], [0, 'asc']]
     });
 
-    // Quick-filter buttons: set the global search box (terms are ANDed, so you can keep typing to refine)
+    // The search box is the source of truth. Toggles add/remove their term;
+    // the URL hash mirrors the box so filtered views are shareable.
+    const input = document.querySelector('#models_filter input, input[type=search]');
+
+    const setSearch = (q, push) => {
+      input.value = q;
+      const url = q ? '#' + encodeURIComponent(q) : location.pathname + location.search;
+      push ? history.pushState(null, '', url) : history.replaceState(null, '', url);
+      table.search(q).draw();
+      refreshButtons();
+    };
+    const refreshButtons = () => {
+      const terms = input.value.toLowerCase().split(/\s+/).filter(Boolean);
+      document.querySelectorAll('.filter-btn').forEach((btn) => {
+        btn.setAttribute('aria-pressed', terms.includes(btn.dataset.q.toLowerCase()) ? 'true' : 'false');
+      });
+    };
+
+    // Button clicks toggle their term and add a history entry (Back/Forward walks views)
     document.querySelectorAll('.filter-btn').forEach((btn) => {
-      btn.addEventListener('click', () => table.search(btn.dataset.q).draw());
+      btn.addEventListener('click', () => {
+        const q = btn.dataset.q;
+        const terms = input.value.split(/\s+/).filter(Boolean);
+        const i = terms.findIndex((t) => t.toLowerCase() === q.toLowerCase());
+        i === -1 ? terms.push(q) : terms.splice(i, 1);
+        setSearch(terms.join(' '), true);
+      });
     });
-    document.getElementById('clear-filters').addEventListener('click', () => table.search('').draw());
+    document.getElementById('clear-filters').addEventListener('click', () => setSearch('', true));
+
+    // Typing replaces history (no keystroke spam); stale toggle states clear themselves
+    input.addEventListener('input', () => setSearch(input.value, false));
+
+    // Back/forward between filtered views: read the hash, don't write history
+    window.addEventListener('hashchange', () => {
+      input.value = decodeURIComponent(location.hash.slice(1));
+      table.search(input.value).draw();
+      refreshButtons();
+    });
+
+    // Deep link on load: #bird%20music
+    input.value = decodeURIComponent(location.hash.slice(1));
+    table.search(input.value).draw();
+    refreshButtons();
   </script>
 </body>
 </html>
