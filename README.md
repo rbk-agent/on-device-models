@@ -56,6 +56,18 @@ Small AI models that run offline on phones, Raspberry Pis, laptops, and browsers
 - [Essentia](https://github.com/MTG/essentia) — full audio analysis toolbox: key, chords, BPM, loudness
 - [Detoxify](https://github.com/unitaryai/detoxify) — text toxicity classification (bonus text lane)
 
+## Image Editing & Restoration
+
+- [rembg / U²-Net](https://github.com/danielgatis/rembg) — the standard background remover; u2netp is ~5 MB and browser-capable (npm: modern-rembg)
+- [BiRefNet](https://github.com/ZhengPeng7/BiRefNet) — current quality leader for background removal, MIT
+- [MODNet](https://github.com/ZHKKKe/MODNet) — real-time portrait matting, ~7 MB quantized
+- [RMBG-1.4](https://huggingface.co/briaai/RMBG-1.4) — top open-weight quality, transformers.js-friendly (non-commercial weights)
+- [MI-GAN](https://github.com/Picsart-AI-Research/MI-GAN) — object removal, ~27 MB ONNX, proven in-browser
+- [LaMa](https://github.com/saic-mdal/lama) — inpainting classic, handles large removals, Apache-2.0
+- [IOPaint](https://github.com/Sanster/IOPaint) — self-hosted inpainting server: LaMa, MI-GAN, PowerPaint behind one brush UI
+- [PowerPaint](https://github.com/open-mmlab/PowerPaint) — text-guided object ADDITION, removal, outpainting in one model
+- [GFPGAN](https://github.com/TencentARC/GFPGAN) — face restoration for old/blurry photos (non-commercial weights)
+
 ## Text & Vision Extras
 
 - [Tesseract.js](https://www.npmjs.com/package/tesseract.js) — OCR in pure JavaScript, 100+ languages

@@ -369,6 +369,54 @@ Bonus text lane: **toxicity classification** for comments/moderation (3 Jigsaw c
 
 ---
 
+## Image Editing & Restoration
+
+| # | Model | Does | License | Node SDK |
+|---|-------|------|---------|-----------|
+| 39 | [rembg / U²-Net](#rembg-u2net) | Background removal | MIT | **node-native** (modern-rembg) |
+| 40 | [BiRefNet](#birefnet) | Highest-quality background removal | MIT | ONNX |
+| 41 | [MODNet](https://github.com/ZHKKKe/MODNet) | Portrait matting, real time | Apache-2.0 | **node-native** (transformers.js) |
+| 42 | [RMBG-1.4](#rmbg-14) | Background removal, top quality | Non-commercial weights | **node-native** (transformers.js) |
+| 43 | [MI-GAN](#mi-gan) | Object removal, ~27 MB | MIT | ONNX |
+| 44 | [LaMa](#lama) | Inpainting, large masks | Apache-2.0 | ONNX |
+| 45 | [IOPaint](#iopaint) | Inpainting server, all models one UI | Apache-2.0 | CLI |
+| 46 | [PowerPaint](#powerpaint) | Object ADDITION, removal, outpainting | MIT/Apache-2.0 | CLI (IOPaint) |
+| 47 | [GFPGAN](#gfpgan) | Face restoration | Non-commercial (S-Lab) | CLI |
+
+### rembg / U²-Net
+
+**The standard open background remover.** u2netp is a ~5 MB ONNX that runs in the browser; full u2net (~170 MB) is higher quality. MIT covers tool and weights. `npm i modern-rembg` runs it in Node/browser.
+
+### BiRefNet
+
+**The current quality leader for background removal** — bilateral reference for high-res dichotomous segmentation, MIT including weights. When u2net edges aren't good enough. ONNX exports for onnxruntime-node.
+
+### RMBG-1.4
+
+**BRIA's IS-Net-based remover — arguably the best open-weight quality**, with first-class transformers.js support (easy browser demos, ~44 MB). ⚠️ weights are source-available **non-commercial**; commercial use requires BRIA's paid license. Trained on fully licensed data, which is why it's restricted.
+
+### MI-GAN
+
+**Object removal via inpainting, mobile-class** (Picsart, ICCV 2023). Brush over anything and it disappears: ~27 MB ONNX, fast enough for interactive use, proven in-browser for watermark removal (onnxruntime-web/WebGPU).
+
+### LaMa
+
+**The classic resolution-robust inpainting model** (WACV 2022, Samsung, Apache-2.0). Better than MI-GAN on large missing areas and complex textures; bigger and slower. Community ONNX exports (sapienkit/LaMa-ONNX) for onnxruntime-node.
+
+### IOPaint
+
+**Self-hosted inpainting server** (Apache-2.0): local web app with brush-masking UI serving LaMa, MI-GAN, PowerPaint, and more. CPU works; GPU recommended for diffusion models. The easiest way to try all these models today.
+
+### PowerPaint
+
+**The realistic answer to "add something to a photo"** (ECCV 2024, MIT code + Apache-2.0 weights): brush a region, describe it in text, and it inpaints the object in with proper lighting and blend — plus removal and outpainting from the same model. SD-based, so laptop/GPU-class — the honest size floor for believable object insertion today.
+
+### GFPGAN
+
+**Face restoration for old/blurry/compressed photos** (Tencent ARC, ~300 MB class). The "restore my grandparents' photo" model. ⚠️ S-Lab license: non-commercial research terms — CodeFormer has the same restriction.
+
+---
+
 ## Text & Vision Extras
 
 The "didn't know this existed" lane — image and text tasks that have good on-device options with Node support.
