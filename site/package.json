@@ -1,0 +1,13 @@
+{
+  "name": "on-device-models-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Static site for the on-device-models index",
+  "scripts": {
+    "build": "eleventy && cp src/_data/models.json _site/models.json"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.0"
+  }
+}
