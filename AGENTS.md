@@ -32,6 +32,7 @@ Non-negotiables:
 
 - **Generator:** Eleventy 3, Node 22. No other runtime deps for the site.
 - **Styling/interaction:** DataTables via the pinned CDN build in `index.njk` (integrity hashes are mandatory — never strip them). No custom CSS files, no UI frameworks. Server-rendered HTML must stay valid without JS.
+- **Quick-filter buttons:** the `<button class="filter-btn">` row above the table sets DataTables' global search box via `data-q` (click populates the box; you can keep typing to refine — terms are ANDed). Add new buttons by adding a `<button>` with a `data-q` term; keep labels honest to what they match.
 - **Build locally:** `cd site && npm install && npm run build` → output in `site/_site/`.
 
 ## Verification (no test suite — verify ad hoc before pushing)

@@ -14,6 +14,18 @@ permalink: index.html
   <p>Small AI models that run offline on phones, Raspberry Pis, laptops, and browsers. No cloud, no API keys, no network calls. A model qualifies if it (1) does something useful, (2) runs on consumer hardware without a cloud service, and (3) has a working public download.</p>
   <p><a href="https://github.com/rbk-agent/on-device-models">GitHub repository</a> · <a href="models.json">JSON index</a> · <a href="https://github.com/rbk-agent/on-device-models/blob/main/docs/model-notes.md">Long-form reference</a></p>
 
+  <p>
+    <button type="button" class="filter-btn" data-q="MIT">MIT</button>
+    <button type="button" class="filter-btn" data-q="music">Music</button>
+    <button type="button" class="filter-btn" data-q="bird">Birds</button>
+    <button type="button" class="filter-btn" data-q="photo">Vision</button>
+    <button type="button" class="filter-btn" data-q="audio">Audio</button>
+    <button type="button" class="filter-btn" data-q="speech">Speech</button>
+    <button type="button" class="filter-btn" data-q="apache">Apache</button>
+    <button type="button" class="filter-btn" data-q="native">Node native</button>
+    <button type="button" id="clear-filters">Clear</button>
+  </p>
+
   <table id="models">
     <thead>
       <tr>
@@ -56,11 +68,17 @@ permalink: index.html
 
   <script src="https://cdn.datatables.net/v/dt/dt-3.0.4/af-3.0.1/b-4.0.3/cr-3.0.2/cc-2.0.2/date-2.0.0/fc-6.0.0/fh-5.0.0/kt-3.0.0/r-4.0.3/rg-2.0.0/rr-2.0.0/sc-3.0.0/sb-2.0.1/sl-4.0.1/datatables.min.js" integrity="sha384-sXe6a656KBCTGQSil4v+EfXtoqhkcvZBWgCCG2eIfN4WLZqkokebD55EhHwY+4h5" crossorigin="anonymous"></script>
   <script>
-    new DataTable('#models', {
+    const table = new DataTable('#models', {
       paging: false,
       responsive: true,
       order: [[1, 'asc'], [0, 'asc']]
     });
+
+    // Quick-filter buttons: set the global search box (terms are ANDed, so you can keep typing to refine)
+    document.querySelectorAll('.filter-btn').forEach((btn) => {
+      btn.addEventListener('click', () => table.search(btn.dataset.q).draw());
+    });
+    document.getElementById('clear-filters').addEventListener('click', () => table.search('').draw());
   </script>
 </body>
 </html>
