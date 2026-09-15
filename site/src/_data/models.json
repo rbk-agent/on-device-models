@@ -505,6 +505,143 @@
       ]
     },
     {
+      "id": "image-editing",
+      "name": "Image Editing & Restoration",
+      "blurb": "Remove backgrounds, erase objects, add objects realistically, restore faces — from photos.",
+      "models": [
+        {
+          "id": "rembg-u2net",
+          "name": "rembg / U²-Net",
+          "task": "Background removal",
+          "input": "photo",
+          "size": "~5 MB (u2netp ONNX)",
+          "license": "MIT",
+          "license_note": "MIT covers both the tool and the U²-Net weights it ships.",
+          "node_sdk": "native",
+          "node_note": "npm i modern-rembg — runs u2netp in the browser/Node via ONNX.",
+          "links": {
+            "repo": "https://github.com/danielgatis/rembg"
+          },
+          "summary": "The standard open background remover. u2netp is a ~5 MB ONNX that runs in the browser (modern-rembg npm proves it); the full u2net (~170 MB) is higher quality. General-purpose: people, products, animals."
+        },
+        {
+          "id": "birefnet",
+          "name": "BiRefNet",
+          "task": "High-quality background removal (dichotomous segmentation)",
+          "input": "photo",
+          "size": "Laptop-class (several variants)",
+          "license": "MIT",
+          "node_sdk": "onnx",
+          "node_note": "ONNX exports exist; run with onnxruntime-node.",
+          "links": {
+            "repo": "https://github.com/ZhengPeng7/BiRefNet"
+          },
+          "summary": "The current quality leader for background removal — bilateral reference for high-res segmentation. When u2net edges aren't good enough, this is the upgrade. MIT including weights."
+        },
+        {
+          "id": "modnet",
+          "name": "MODNet",
+          "task": "Portrait matting (background removal for people)",
+          "input": "photo",
+          "size": "~7 MB quantized",
+          "license": "Apache-2.0",
+          "node_sdk": "native",
+          "node_note": "Runs in the browser via transformers.js; ~7 MB at 8-bit quantization.",
+          "links": {
+            "repo": "https://github.com/ZHKKKe/MODNet"
+          },
+          "summary": "Trimap-free portrait matting in real time (AAAI 2022). The tiny, fast pick when your subjects are always people — 30 FPS on modest hardware."
+        },
+        {
+          "id": "rmbg-14",
+          "name": "RMBG-1.4",
+          "task": "High-quality background removal",
+          "input": "photo",
+          "size": "~44 MB",
+          "license": "Source-available (non-commercial)",
+          "license_note": "BRIA's license agreement — non-commercial use only; commercial requires a paid license. Trained on licensed data, which is why it's restricted.",
+          "node_sdk": "native",
+          "node_note": "First-class transformers.js support — runs in the browser.",
+          "links": {
+            "huggingface": "https://huggingface.co/briaai/RMBG-1.4"
+          },
+          "summary": "BRIA's IS-Net-based remover — arguably the best open-weight quality, with easy transformers.js browser demos. But the weights are non-commercial: great for personal tools, not for shipping a product."
+        },
+        {
+          "id": "migan",
+          "name": "MI-GAN",
+          "task": "Object removal via inpainting (mobile-class)",
+          "input": "photo + mask",
+          "size": "~27 MB ONNX",
+          "license": "MIT",
+          "node_sdk": "onnx",
+          "node_note": "Official ONNX pipeline; proven in-browser via onnxruntime-web/WebGPU (see youngkim0/watermark-remover).",
+          "links": {
+            "repo": "https://github.com/Picsart-AI-Research/MI-GAN"
+          },
+          "summary": "Brush over anything and it disappears — Picsart's ICCV 2023 mobile inpainting model. ~27 MB ONNX, fast enough for interactive use, and it's been shipped in real browser apps for watermark removal."
+        },
+        {
+          "id": "lama",
+          "name": "LaMa",
+          "task": "Object removal via inpainting (large masks)",
+          "input": "photo + mask",
+          "size": "~200 MB",
+          "license": "Apache-2.0",
+          "node_sdk": "onnx",
+          "node_note": "Community ONNX exports (sapienkit/LaMa-ONNX); run with onnxruntime-node.",
+          "links": {
+            "repo": "https://github.com/saic-mdal/lama"
+          },
+          "summary": "The classic resolution-robust inpainting model (WACV 2022, Samsung). Better than MI-GAN on large missing areas and complex textures; bigger and slower. Apache-2.0 with community ONNX exports."
+        },
+        {
+          "id": "iopaint",
+          "name": "IOPaint",
+          "task": "Inpainting server: LaMa, MI-GAN, PowerPaint behind one UI",
+          "input": "photo + mask",
+          "size": "Varies per model",
+          "license": "Apache-2.0",
+          "node_sdk": "cli",
+          "node_note": "Self-hosted web UI/API; spawn from Node or run as a service.",
+          "links": {
+            "repo": "https://github.com/Sanster/IOPaint"
+          },
+          "summary": "The easiest way to use all these inpainting models today: a local web app with brush-masking UI that serves LaMa, MI-GAN, PowerPaint, and more. CPU works; GPU recommended for the diffusion ones."
+        },
+        {
+          "id": "powerpaint",
+          "name": "PowerPaint",
+          "task": "Text-guided object ADDITION, removal, outpainting — one model",
+          "input": "photo + mask + text",
+          "size": "Laptop-class (SD-based, ~1 GB class)",
+          "license": "MIT (code), Apache-2.0 (weights)",
+          "node_sdk": "cli",
+          "node_note": "Via IOPaint; diffusion pipeline — GPU strongly recommended.",
+          "links": {
+            "repo": "https://github.com/open-mmlab/PowerPaint",
+            "huggingface": "https://huggingface.co/JunhaoZhuang/PowerPaint_v2"
+          },
+          "summary": "The realistic answer to 'add something to a photo': brush a region, describe it in text, and it inpaints it in with proper lighting/blend — plus removal and outpainting from the same model (ECCV 2024). SD-based, so it's laptop/GPU-class, not phone-class — the honest size floor for believable object insertion today."
+        },
+        {
+          "id": "gfpgan",
+          "name": "GFPGAN",
+          "task": "Face restoration (old/blurry/compressed photos)",
+          "input": "photo",
+          "size": "~300 MB class (v1.4 + helper)",
+          "license": "Non-commercial research (S-Lab)",
+          "license_note": "S-Lab license 1.0 — free for research/personal, commercial use requires negotiation. CodeFormer is the same situation.",
+          "node_sdk": "cli",
+          "node_note": "Python; community pipelines and ONNX exports exist.",
+          "links": {
+            "repo": "https://github.com/TencentARC/GFPGAN"
+          },
+          "summary": "The standard for fixing faces in old or degraded photos — the 'restore my grandparents' photo' model (Tencent ARC). Watch the license: non-commercial research terms, like most face-restoration weights (CodeFormer included)."
+        }
+      ]
+    },
+    {
       "id": "text-vision",
       "name": "Text & Vision Extras",
       "blurb": "OCR, upscaling, background removal — on-device lanes you might not have thought of.",
