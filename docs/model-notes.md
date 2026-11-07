@@ -103,13 +103,15 @@ Not a model — **research-grade plant photo dataset + training code** (NeurIPS 
 |---|-------|------|--------------|------|---------|-----------|
 | 8 | [Whisper.cpp](#whispercpp) | STT, 90+ languages | Audio→Text | 39M–1.5B params | MIT | **node-native** (multiple) |
 | 9 | [sherpa-onnx](#sherpa-onnx) | STT + TTS + more | Audio↔Text | varies | Apache-2.0 | **node-native** |
-| 10 | [Moonshine](#moonshine) | STT for edge devices | Audio→Text | 27M–61M params | MIT | via sherpa-onnx |
+| 10 | [Moonshine](#moonshine) | Edge STT + TTS, streaming | Audio↔Text | ~1 MB – 61M params | MIT | **node-native** (moonshine-js) |
 | 11 | [SenseVoice Small](#sensevoice-small) | STT + emotion + events | Audio→Text+ | ~230 MB int8 | FunASR v1.1 (weights) | via sherpa-onnx |
-| 12 | [Vosk](#vosk) | Streaming STT, 20+ langs | Audio→Text | 50 MB models | Apache-2.0 | **node-native** |
-| 13 | [Kokoro](#kokoro) | TTS, high quality | Text→Audio | 82M params | Apache-2.0 | **node-native** (kokoro-js) |
-| 14 | [Piper](#piper) | TTS, many voices/languages | Text→Audio | ~60 MB per voice | MIT/GPL (see below) | via sherpa-onnx |
-| 15 | [MeloTTS](#melotts) | Multilingual TTS | Text→Audio | ~200 MB class | MIT | Python; ONNX exists |
-| 16 | [Echogarden](#echogarden) | Speech toolset: STT, TTS, align, translate | Audio↔Text | varies | MIT (+ GPL parts) | **node-native** |
+| 12 | [Parakeet TDT 0.6B v3](#parakeet-tdt-06b-v3) | Multilingual STT, 25 langs | Audio→Text | 0.6B params (714 MB q8) | CC BY 4.0 | CLI (NeMo-Speech.cpp) |
+| 13 | [Vosk](#vosk) | Streaming STT, 20+ langs | Audio→Text | 50 MB models | Apache-2.0 | **node-native** |
+| 14 | [Kokoro](#kokoro) | TTS, high quality | Text→Audio | 82M params | Apache-2.0 | **node-native** (kokoro-js) |
+| 15 | [Piper](#piper) | TTS, many voices/languages | Text→Audio | ~60 MB per voice | MIT/GPL (see below) | via sherpa-onnx |
+| 16 | [MeloTTS](#melotts) | Multilingual TTS | Text→Audio | ~200 MB class | MIT | Python; ONNX exists |
+| 17 | [VoxCPM 1.5](#voxcpm-15) | Voice-cloning TTS | Text→Audio | ~1.6 GB | Apache-2.0 | Python |
+| 18 | [Echogarden](#echogarden) | Speech toolset: STT, TTS, align, translate | Audio↔Text | varies | MIT (+ GPL parts) | **node-native** |
 
 ### Whisper.cpp
 
@@ -129,11 +131,13 @@ The **swiss-army knife of offline speech**. Next-gen Kaldi + ONNX Runtime: strea
 
 ### Moonshine
 
-STT **designed for edge hardware** (Useful Sensors). Variable-length windows instead of Whisper's fixed 30s chunks, so short utterances transcribe several times faster. Tiny = 27M params (microcontroller- and browser-class), Base = 61M.
+Edge-native speech models: **STT and TTS, streaming-first** — optimized for live latency, doing work while the user is still talking. Variable-length windows instead of Whisper's fixed 30-second chunks, so short utterances transcribe several times faster.
 
-- **License:** MIT (models and code; new streaming multilingual models under Moonshine Community License — check per-model).
-- **Get it:** [moonshine-ai/moonshine](https://github.com/moonshine-ai/moonshine) · [HF: UsefulSensors/moonshine](https://huggingface.co/UsefulSensors/moonshine)
-- **Node:** via `sherpa-onnx-node` (Moonshine is one of its ASR backends).
+- **Numbers:** STT in 10 languages (English, Spanish, German, Mandarin, Japanese, Korean, Vietnamese, Tagalog, Ukrainian, Arabic); TTS in 16. Tiny = 27M, Base = 61M params; micro models run down to ~1 MB.
+- **Runtime:** one library across Python, JavaScript/WASM, iOS, Android, macOS, Linux, Windows, and Raspberry Pi (`pip install moonshine-voice`).
+- **License:** MIT by default — every language, every size. Only the legacy non-streaming non-English models stay under the non-commercial Moonshine Community License.
+- **Get it:** [moonshine-ai/moonshine](https://github.com/moonshine-ai/moonshine) · [HF: moonshine-ai/moonshine](https://huggingface.co/moonshine-ai/moonshine)
+- **Node:** **node-native** — `npm i @moonshine-ai/moonshine-js` (official JS/WASM); also a sherpa-onnx backend.
 
 ### SenseVoice Small
 
@@ -142,6 +146,15 @@ Alibaba's **multi-task STT**: transcription + **emotion recognition + audio even
 - **License:** code MIT; weights under the **FunASR Model License v1.1** — commercial use permitted with attribution.
 - **Get it:** [FunAudioLLM/SenseVoice](https://github.com/FunAudioLLM/SenseVoice)
 - **Node:** via `sherpa-onnx-node` (SenseVoice is a supported backend).
+
+### Parakeet TDT 0.6B v3
+
+NVIDIA's multilingual ASR: **25 European languages with automatic language detection**, built-in punctuation and capitalization, and word-level timestamps. Avg WER 6.34% across the HF Open ASR leaderboard's English suite — top-tier for the size.
+
+- **Numbers:** 0.6B params (FastConformer-TDT); q8 GGUF is 714 MB, FP32 2.5 GB; ~2 GB RAM to load.
+- **License:** CC BY 4.0 (commercial use allowed with attribution).
+- **Get it:** [HF: nvidia/parakeet-tdt-0.6b-v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3) · local runtime: [NVIDIA/NeMo-Speech.cpp](https://github.com/NVIDIA/NeMo-Speech.cpp) · ONNX exports: [istupakov/onnx-asr](https://github.com/istupakov/onnx-asr)
+- **Node:** spawn NeMo-Speech.cpp — NVIDIA's lightweight C++ runtime runs the q8 GGUF locally; or the community ONNX exports via `onnxruntime-node`.
 
 ### Vosk
 
@@ -153,10 +166,10 @@ Alibaba's **multi-task STT**: transcription + **emotion recognition + audio even
 
 ### Kokoro
 
-**Frontier TTS at 82M params** — best quality-per-size available, won an OpenAI TTS arena against much larger models. Quantized ONNX build is ~92 MB. The `kokoro-js` package runs it in browser (WASM) and Node.
+**Frontier TTS at 82M params** — best quality-per-size available, won an OpenAI TTS arena against much larger models. fp32 ONNX is 326 MB, q8 ~92 MB. The `kokoro-js` package runs it in browser (WASM) and Node. v1.0 is the current English release; a v1.1-zh fine-tune adds Mandarin.
 
 - **License:** Apache-2.0 (weights included).
-- **Get it:** [npm: kokoro-js](https://www.npmjs.com/package/kokoro-js) · [HF: onnx-community/Kokoro-82M-ONNX](https://huggingface.co/onnx-community/Kokoro-82M-ONNX) · original: [hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)
+- **Get it:** [npm: kokoro-js](https://www.npmjs.com/package/kokoro-js) · [HF: onnx-community/Kokoro-82M-v1.0-ONNX](https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX) · original: [hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)
 - **Node:** **node-native** — `npm i kokoro-js`.
 
 ### Piper
@@ -173,6 +186,15 @@ High-quality **multilingual TTS** (English, Spanish, French, Chinese, Japanese, 
 - **Get it:** [myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS)
 - **Node:** Python-first; ONNX exports exist for `onnxruntime-node` use.
 
+### VoxCPM 1.5
+
+OpenBMB's **tokenizer-free TTS** (Apache-2.0, fine-tuned from MiniCPM4-0.5B): true-to-life **zero-shot voice cloning** from a reference clip, plus **creative voice design** — describe a voice in text and it synthesizes it. English and Mandarin; laptop-class.
+
+- **Numbers:** 801M params BF16 (~1.6 GB) plus a 301 MB audio VAE.
+- **License:** Apache-2.0 (weights and code).
+- **Get it:** [HF: openbmb/VoxCPM1.5](https://huggingface.co/openbmb/VoxCPM1.5) · [OpenBMB/VoxCPM](https://github.com/OpenBMB/VoxCPM)
+- **Node:** Python/PyTorch first; no ONNX exports yet — a port would be a project. VoxCPM2 (2B, 30 languages) exists but is desktop-class.
+
 ### Echogarden
 
 A **speech toolset in pure TypeScript**: STT (whisper.cpp-backed), TTS, forced alignment, speech translation, language detection, and source separation — with a friendly API and MIT license (whisper models MIT; some components GPL).
@@ -187,12 +209,12 @@ A **speech toolset in pure TypeScript**: STT (whisper.cpp-backed), TTS, forced a
 
 | # | Model | Does | Input | License | Node SDK |
 |---|-------|------|-------|---------|-----------|
-| 17 | [Silero VAD](#silero-vad) | Voice activity detection | Audio | MIT | **node-native** |
-| 18 | [pyannote](#pyannote) | Speaker diarization: who spoke when | Audio | MIT (code) | Python; ONNX exports |
-| 19 | [DeepFilterNet](#deepfilternet) | Noise suppression, streaming | Audio | Apache-2.0? (see below) | via sherpa-onnx |
-| 20 | [RNNoise](#rnnoise) | Classic noise suppression, tiny | Audio | BSD-3 | C lib; wasm exists |
-| 21 | [openWakeWord](#openwakeword) | Wake word detection, trainable | Audio | Apache-2.0 | Python; ONNX portable |
-| 22 | [3D-Speaker](#3d-speaker) | Speaker verification/ID | Audio | Apache-2.0 | Python; ONNX |
+| 19 | [Silero VAD](#silero-vad) | Voice activity detection | Audio | MIT | **node-native** |
+| 20 | [pyannote](#pyannote) | Speaker diarization: who spoke when | Audio | MIT (code) | Python; ONNX exports |
+| 21 | [DeepFilterNet](#deepfilternet) | Noise suppression, streaming | Audio | Apache-2.0? (see below) | via sherpa-onnx |
+| 22 | [RNNoise](#rnnoise) | Classic noise suppression, tiny | Audio | BSD-3 | C lib; wasm exists |
+| 23 | [openWakeWord](#openwakeword) | Wake word detection, trainable | Audio | Apache-2.0 | Python; ONNX portable |
+| 24 | [3D-Speaker](#3d-speaker) | Speaker verification/ID | Audio | Apache-2.0 | Python; ONNX |
 
 ### Silero VAD
 
@@ -249,10 +271,10 @@ Split a mixed track into isolated stems (vocals, drums, bass, other) — the "au
 
 | # | Model | Stems | License | Node SDK |
 |---|-------|-------|---------|-----------|
-| 23 | [Demucs](#demucs) | 2/4/6 stems, SOTA quality | MIT | **node-native** (npm port) |
-| 24 | [Spleeter](#spleeter) | 2/4/5 stems, fast | MIT | Python; TF SavedModel |
-| 25 | [Open-Unmix](#open-unmix) | Research stem separation | BSD-3? (see below) | Python |
-| 26 | [sherpa-onnx separation](#sherpa-onnx-separation) | Speech separation (2 speakers) | Apache-2.0 | **node-native** |
+| 25 | [Demucs](#demucs) | 2/4/6 stems, SOTA quality | MIT | **node-native** (npm port) |
+| 26 | [Spleeter](#spleeter) | 2/4/5 stems, fast | MIT | Python; TF SavedModel |
+| 27 | [Open-Unmix](#open-unmix) | Research stem separation | BSD-3? (see below) | Python |
+| 28 | [sherpa-onnx separation](#sherpa-onnx-separation) | Speech separation (2 speakers) | Apache-2.0 | **node-native** |
 
 ### Demucs
 
@@ -290,10 +312,10 @@ Audio → MIDI / notation. This lane is thinner than the others — the open mod
 
 | # | Model | Outputs | License | Node SDK |
 |---|-------|---------|---------|-----------|
-| 27 | [Basic Pitch](#basic-pitch) | Polyphonic audio → MIDI | Apache-2.0 | **node-native** |
-| 28 | [MT3](#mt3) | Multi-instrument → MIDI, all at once | Apache-2.0 | Python/JAX |
-| 29 | [musicnn](#musicnn) | Music tags (genre, instruments, mood) | ISC | Python; portable |
-| 30 | [ChromaPrint](#chromaprint) | Audio fingerprinting (not transcription) | LGPL-2.1+ | **C lib, wasm** |
+| 29 | [Basic Pitch](#basic-pitch) | Polyphonic audio → MIDI | Apache-2.0 | **node-native** |
+| 30 | [MT3](#mt3) | Multi-instrument → MIDI, all at once | Apache-2.0 | Python/JAX |
+| 31 | [musicnn](#musicnn) | Music tags (genre, instruments, mood) | ISC | Python; portable |
+| 32 | [ChromaPrint](#chromaprint) | Audio fingerprinting (not transcription) | MIT own code / LGPL-2.1 whole | **C lib, wasm** |
 
 ### Basic Pitch
 
@@ -323,7 +345,7 @@ Pre-trained **music audio taggers**: genre, instruments, mood, tempo (MagnaTagAT
 
 Not transcription — **audio fingerprinting** (the AcoustID backend): identify *what recording is this* by matching a compact fingerprint against a database. "Shazam-like" ID for your own music library, fully offline (matching side).
 
-- **License:** LGPL-2.1+.
+- **License:** ⚠️ split as of v1.6 — own source code is MIT, bundled FFmpeg parts keep the project LGPL-2.1 as a whole; upstream intends to go MIT-only. v1.6.2 (Oct 2026) is current.
 - **Get it:** [acoustid/chromaprint](https://github.com/acoustid/chromaprint)
 - **Node:** C library; WASM builds exist; or shell out to `fpcalc`.
 
@@ -333,10 +355,10 @@ Not transcription — **audio fingerprinting** (the AcoustID backend): identify 
 
 | # | Model | Does | License | Node SDK |
 |---|-------|------|---------|-----------|
-| 31 | [YAMNet](#yamnet-1) | 521 general sounds incl. instruments | Apache-2.0 | **node-native** |
-| 32 | [musicnn](#musicnn-1) | Music genre/instrument/mood tags | ISC | Python |
-| 33 | [Essentia](#essentia) | Full audio-analysis toolbox | AGPL-3.0 | **node-native** (essentia.js) |
-| 34 | [Detoxify](#detoxify) | Text toxicity (bonus text lane) | Apache-2.0 | Python |
+| 33 | [YAMNet](#yamnet-1) | 521 general sounds incl. instruments | Apache-2.0 | **node-native** |
+| 34 | [musicnn](#musicnn-1) | Music genre/instrument/mood tags | ISC | Python |
+| 35 | [Essentia](#essentia) | Full audio-analysis toolbox | AGPL-3.0 | **node-native** (essentia.js) |
+| 36 | [Detoxify](#detoxify) | Text toxicity (bonus text lane) | Apache-2.0 | Python |
 
 *(YAMNet and musicnn appear in the nature section too — repeated here because they're the sound-tagging lane.)*
 
@@ -373,15 +395,16 @@ Bonus text lane: **toxicity classification** for comments/moderation (3 Jigsaw c
 
 | # | Model | Does | License | Node SDK |
 |---|-------|------|---------|-----------|
-| 39 | [rembg / U²-Net](#rembg-u2net) | Background removal | MIT | **node-native** (modern-rembg) |
-| 40 | [BiRefNet](#birefnet) | Highest-quality background removal | MIT | ONNX |
-| 41 | [MODNet](https://github.com/ZHKKKe/MODNet) | Portrait matting, real time | Apache-2.0 | **node-native** (transformers.js) |
-| 42 | [RMBG-1.4](#rmbg-14) | Background removal, top quality | Non-commercial weights | **node-native** (transformers.js) |
-| 43 | [MI-GAN](#mi-gan) | Object removal, ~27 MB | MIT | ONNX |
-| 44 | [LaMa](#lama) | Inpainting, large masks | Apache-2.0 | ONNX |
-| 45 | [IOPaint](#iopaint) | Inpainting server, all models one UI | Apache-2.0 | CLI |
-| 46 | [PowerPaint](#powerpaint) | Object ADDITION, removal, outpainting | MIT/Apache-2.0 | CLI (IOPaint) |
-| 47 | [GFPGAN](#gfpgan) | Face restoration | Non-commercial (S-Lab) | CLI |
+| 37 | [rembg / U²-Net](#rembg-u2net) | Background removal | MIT | **node-native** (modern-rembg) |
+| 38 | [BiRefNet](#birefnet) | Highest-quality background removal | MIT | ONNX |
+| 39 | [MODNet](https://github.com/ZHKKKe/MODNet) | Portrait matting, real time | Apache-2.0 | **node-native** (transformers.js) |
+| 40 | [RMBG-1.4](#rmbg-14) | Background removal, lighter | Non-commercial weights | **node-native** (transformers.js) |
+| 41 | [RMBG-2.0](#rmbg-20) | Background removal, BRIA's strongest | CC BY-NC 4.0 (weights) | ONNX |
+| 42 | [MI-GAN](#mi-gan) | Object removal, ~27 MB | MIT | ONNX |
+| 43 | [LaMa](#lama) | Inpainting, large masks | Apache-2.0 | ONNX |
+| 44 | [IOPaint](#iopaint) | Inpainting server, all models one UI | Apache-2.0 | CLI |
+| 45 | [PowerPaint](#powerpaint) | Object ADDITION, removal, outpainting | MIT/Apache-2.0 | CLI (IOPaint) |
+| 46 | [GFPGAN](#gfpgan) | Face restoration | Non-commercial (S-Lab) | CLI |
 
 ### rembg / U²-Net
 
@@ -393,7 +416,11 @@ Bonus text lane: **toxicity classification** for comments/moderation (3 Jigsaw c
 
 ### RMBG-1.4
 
-**BRIA's IS-Net-based remover — arguably the best open-weight quality**, with first-class transformers.js support (easy browser demos, ~44 MB). ⚠️ weights are source-available **non-commercial**; commercial use requires BRIA's paid license. Trained on fully licensed data, which is why it's restricted.
+**BRIA's IS-Net-based remover (~44 MB)** — first-class transformers.js support (easy browser demos). Superseded on quality by the BiRefNet-based RMBG-2.0 below, but the lighter download. ⚠️ weights are source-available **non-commercial**; commercial use requires BRIA's paid license. Trained on fully licensed data, which is why it's restricted.
+
+### RMBG-2.0
+
+**BRIA's strongest remover** — built on the BiRefNet architecture, 220M params: 885 MB FP32, int8 ONNX 366 MB, q4f16 234 MB. ⚠️ same BRIA deal, now CC BY-NC 4.0: non-commercial only, gated behind an instant form on HF; commercial license sold separately.
 
 ### MI-GAN
 
@@ -405,7 +432,7 @@ Bonus text lane: **toxicity classification** for comments/moderation (3 Jigsaw c
 
 ### IOPaint
 
-**Self-hosted inpainting server** (Apache-2.0): local web app with brush-masking UI serving LaMa, MI-GAN, PowerPaint, and more. CPU works; GPU recommended for diffusion models. The easiest way to try all these models today.
+**Self-hosted inpainting server** (Apache-2.0): local web app with brush-masking UI serving LaMa, MI-GAN, PowerPaint, and more. CPU works; GPU recommended for diffusion models. ⚠️ Archived April 2025 (final release 1.5.3) — still the easiest way to try all these models, but unmaintained; pin your version.
 
 ### PowerPaint
 
@@ -423,10 +450,10 @@ The "didn't know this existed" lane — image and text tasks that have good on-d
 
 | # | Model | Does | License | Node SDK |
 |---|-------|------|---------|-----------|
-| 35 | [Tesseract.js](#tesseractjs) | OCR, 100+ languages | Apache-2.0 | **node-native** |
-| 36 | [UpscalerJS](#upscalerjs) | Image super-resolution | MIT | **node-native** |
-| 37 | [imgly background-removal](#imgly-background-removal) | Background removal | custom permissive-ish | **node-native** |
-| 38 | [Transformers.js](#transformersjs) | 1000s of HF models in JS | Apache-2.0 | **node-native** |
+| 47 | [Tesseract.js](#tesseractjs) | OCR, 100+ languages | Apache-2.0 | **node-native** |
+| 48 | [UpscalerJS](#upscalerjs) | Image super-resolution | MIT | **node-native** |
+| 49 | [imgly background-removal](#imgly-background-removal) | Background removal | AGPL-3.0 | **node-native** |
+| 50 | [Transformers.js](#transformersjs) | 1000s of HF models in JS | Apache-2.0 | **node-native** |
 
 ### Tesseract.js
 
@@ -443,7 +470,7 @@ The "didn't know this existed" lane — image and text tasks that have good on-d
 
 ### imgly background-removal
 
-**Background removal** (people/products) in browser JS by IMG.LY — segmentation model runs locally, no server. ⚠️ custom license — free for most uses, commercial terms at scale (check [LICENSE.md](https://github.com/imgly/background-removal-js)).
+**Background removal** (people/products) in browser JS by IMG.LY — segmentation model runs locally, no server. ⚠️ **AGPL-3.0** — free for open projects; commercial use requires IMG.LY's commercial license (dual-licensed).
 
 - **Get it:** [npm: @imgly/background-removal](https://www.npmjs.com/package/@imgly/background-removal) · [imgly/background-removal-js](https://github.com/imgly/background-removal-js)
 

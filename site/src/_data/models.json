@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-15",
+  "updated": "2026-11-06",
   "categories": [
     {
       "id": "nature",
@@ -138,18 +138,18 @@
         {
           "id": "moonshine",
           "name": "Moonshine",
-          "task": "STT designed for edge devices",
-          "input": "audio",
-          "size": "27M-61M params",
+          "task": "Edge-native STT + TTS, streaming-first",
+          "input": "audio + text",
+          "size": "~1 MB micro to 61M params",
           "license": "MIT (most models)",
-          "license_note": "Some legacy non-English non-streaming models stay under the non-commercial Moonshine Community License.",
+          "license_note": "Models are MIT by default in every language and at every size; legacy non-streaming non-English models stay under the non-commercial Moonshine Community License.",
           "node_sdk": "native",
-          "node_note": "Available as a sherpa-onnx backend.",
+          "node_note": "npm i @moonshine-ai/moonshine-js — official JS/WASM package; also a sherpa-onnx backend.",
           "links": {
             "repo": "https://github.com/moonshine-ai/moonshine",
-            "huggingface": "https://huggingface.co/UsefulSensors/moonshine"
+            "huggingface": "https://huggingface.co/moonshine-ai/moonshine"
           },
-          "summary": "Edge-first STT from Useful Sensors. Variable-length windows instead of Whisper's fixed 30-second chunks, so short utterances transcribe several times faster. Tiny is 27M params — microcontroller and browser class."
+          "summary": "Now both halves of speech: STT in 10 languages (English, Spanish, German, Mandarin, Japanese, Korean, Vietnamese, Tagalog, Ukrainian, Arabic) and TTS in 16, streaming-optimized to do work while the user is still talking. Variable-length windows beat Whisper's fixed 30-second chunks on short utterances; micro models run down to ~1 MB. One library across Python, JS/WASM, iOS, Android, and Raspberry Pi."
         },
         {
           "id": "sensevoice",
@@ -166,6 +166,21 @@
             "huggingface": "https://huggingface.co/FunAudioLLM/SenseVoiceSmall"
           },
           "summary": "Alibaba's multi-task STT: transcription plus emotion recognition plus audio event detection (laughter, music, applause) in a single pass. Mandarin, Cantonese, English, Japanese, Korean. Very fast for its capability."
+        },
+        {
+          "id": "parakeet-tdt",
+          "name": "Parakeet TDT 0.6B v3",
+          "task": "Multilingual STT, 25 European languages",
+          "input": "audio",
+          "size": "0.6B params (714 MB q8 GGUF; 2.5 GB FP32)",
+          "license": "CC BY 4.0",
+          "node_sdk": "cli",
+          "node_note": "NVIDIA's NeMo-Speech.cpp runs the q8 GGUF locally — spawn it from Node; community ONNX exports (istupakov/onnx-asr) open an onnxruntime-node path.",
+          "links": {
+            "huggingface": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3",
+            "repo": "https://github.com/NVIDIA/NeMo-Speech.cpp"
+          },
+          "summary": "NVIDIA's FastConformer-TDT ASR: 25 European languages with automatic language detection, built-in punctuation and capitalization, and word-level timestamps. Avg WER 6.34% across the HF Open ASR leaderboard's English suite. Runs offline from a 714 MB q8 GGUF with ~2 GB RAM — laptop-class, no cloud."
         },
         {
           "id": "vosk",
@@ -187,15 +202,15 @@
           "name": "Kokoro",
           "task": "Text to speech, frontier quality at 82M params",
           "input": "text",
-          "size": "82M params (~92 MB quantized ONNX)",
+          "size": "82M params (326 MB fp32 ONNX; ~92 MB q8)",
           "license": "Apache-2.0",
           "node_sdk": "native",
           "node_note": "npm i kokoro-js — runs in Node and browser WASM.",
           "links": {
             "npm": "https://www.npmjs.com/package/kokoro-js",
-            "huggingface": "https://huggingface.co/onnx-community/Kokoro-82M-ONNX"
+            "huggingface": "https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX"
           },
-          "summary": "Frontier TTS at 82M params — best quality-per-size available, won an OpenAI TTS arena against much larger models. kokoro-js runs it in the browser (WASM) and Node."
+          "summary": "Frontier TTS at 82M params — best quality-per-size available, won an OpenAI TTS arena against much larger models. kokoro-js runs it in the browser (WASM) and Node. v1.0 is the current English release; a v1.1-zh fine-tune adds Mandarin."
         },
         {
           "id": "piper",
@@ -225,6 +240,21 @@
             "repo": "https://github.com/myshell-ai/MeloTTS"
           },
           "summary": "High-quality multilingual TTS (English, Spanish, French, Chinese, Japanese, Korean) by MyShell, CPU-realtime capable. Bigger than Kokoro but strong multilingual coverage."
+        },
+        {
+          "id": "voxcpm",
+          "name": "VoxCPM 1.5",
+          "task": "Zero-shot voice-cloning TTS (tokenizer-free)",
+          "input": "text + reference audio",
+          "size": "801M params BF16 (~1.6 GB) + 301 MB audio VAE",
+          "license": "Apache-2.0",
+          "node_sdk": "none",
+          "node_note": "Python/PyTorch library; no ONNX exports yet — a Node port would be a project.",
+          "links": {
+            "huggingface": "https://huggingface.co/openbmb/VoxCPM1.5",
+            "repo": "https://github.com/OpenBMB/VoxCPM"
+          },
+          "summary": "OpenBMB's tokenizer-free TTS, fine-tuned from MiniCPM4-0.5B: true-to-life zero-shot voice cloning from a reference clip, plus creative voice design — describe a voice in text and it synthesizes it. English and Mandarin, Apache-2.0 weights, laptop-class. VoxCPM2 (2B, 30 languages) exists but is desktop-class."
         },
         {
           "id": "echogarden",
@@ -428,13 +458,14 @@
           "task": "Audio fingerprinting (recognition, not transcription)",
           "input": "audio",
           "size": "Compact fingerprints",
-          "license": "LGPL-2.1+",
+          "license": "LGPL-2.1 (whole), MIT (own code)",
+          "license_note": "Own source code is MIT; bundled FFmpeg parts keep the project LGPL-2.1 as a whole. Upstream wants to drop the FFmpeg code and go MIT-only.",
           "node_sdk": "cli",
           "node_note": "C library; WASM builds exist, or shell out to fpcalc.",
           "links": {
             "repo": "https://github.com/acoustid/chromaprint"
           },
-          "summary": "The AcoustID backend: identify what recording this is by fingerprint matching — Shazam-like ID for your own library, offline on the matching side."
+          "summary": "The AcoustID backend: identify what recording this is by fingerprint matching — Shazam-like ID for your own library, offline on the matching side. v1.6.2 (Oct 2026) is current and split-licensed MIT/LGPL-2.1."
         }
       ]
     },
@@ -565,7 +596,22 @@
           "links": {
             "huggingface": "https://huggingface.co/briaai/RMBG-1.4"
           },
-          "summary": "BRIA's IS-Net-based remover — arguably the best open-weight quality, with easy transformers.js browser demos. But the weights are non-commercial: great for personal tools, not for shipping a product."
+          "summary": "BRIA's IS-Net-based remover (~44 MB) with easy transformers.js browser demos. The BiRefNet-based RMBG-2.0 beats it on quality; this is the lighter option. Weights are non-commercial: great for personal tools, not for shipping a product."
+        },
+        {
+          "id": "rmbg-2",
+          "name": "RMBG-2.0",
+          "task": "Background removal, BRIA's strongest (BiRefNet-based)",
+          "input": "photo",
+          "size": "220M params (885 MB FP32; 366 MB int8 ONNX; 234 MB q4f16 ONNX)",
+          "license": "CC BY-NC 4.0 (weights)",
+          "license_note": "Non-commercial only; gated on Hugging Face behind an instant form. Commercial license sold by BRIA — trained on licensed data.",
+          "node_sdk": "onnx",
+          "node_note": "ONNX exports ship on the model card (int8/q4/fp16); the BiRefNet architecture is supported in transformers.js.",
+          "links": {
+            "huggingface": "https://huggingface.co/briaai/RMBG-2.0"
+          },
+          "summary": "BRIA's second-generation remover built on BiRefNet — the strongest quality in their line, and the ONNX exports make it genuinely on-device (int8 is 366 MB). Same deal as RMBG-1.4: personal tools yes, shipping a product no."
         },
         {
           "id": "migan",
@@ -602,12 +648,13 @@
           "input": "photo + mask",
           "size": "Varies per model",
           "license": "Apache-2.0",
+          "license_note": "Repo archived April 2025 (final release 1.5.3); still installable and working.",
           "node_sdk": "cli",
           "node_note": "Self-hosted web UI/API; spawn from Node or run as a service.",
           "links": {
             "repo": "https://github.com/Sanster/IOPaint"
           },
-          "summary": "The easiest way to use all these inpainting models today: a local web app with brush-masking UI that serves LaMa, MI-GAN, PowerPaint, and more. CPU works; GPU recommended for the diffusion ones."
+          "summary": "Still the easiest way to try all these inpainting models: a local web app with brush-masking UI that serves LaMa, MI-GAN, PowerPaint, and more. CPU works; GPU recommended for the diffusion ones. Archived April 2025 — unmaintained, so pin your version."
         },
         {
           "id": "powerpaint",
@@ -682,15 +729,15 @@
           "task": "Background removal from images",
           "input": "photo",
           "size": "Segmentation model runs locally",
-          "license": "Custom (free for most uses)",
-          "license_note": "Commercial terms at scale — check the LICENSE.md.",
+          "license": "AGPL-3.0",
+          "license_note": "Dual-licensed: AGPL-3.0 for open use, commercial licenses available from IMG.LY.",
           "node_sdk": "native",
           "node_note": "npm i @imgly/background-removal.",
           "links": {
             "npm": "https://www.npmjs.com/package/@imgly/background-removal",
             "repo": "https://github.com/imgly/background-removal-js"
           },
-          "summary": "Background removal (people, products) in browser JavaScript by IMG.LY — the segmentation model runs locally, no server."
+          "summary": "Background removal (people, products) in browser JavaScript by IMG.LY — the segmentation model runs locally, no server. AGPL-3.0: free for open projects, commercial use needs IMG.LY's commercial license."
         },
         {
           "id": "transformers-js",
