@@ -13,8 +13,8 @@ git pull --ff-only
 
 PROMPT="Load and execute the skill at $REPO/.agents/skills/$SKILL/SKILL.md for the repository at $REPO. Cap at one PR; return summary, no-op, or PR URL."
 
-OUTPUT=$(hermes chat -q "$PROMPT" -t terminal,web,file --oneshot --accept-hooks 2>&1 | tee -a "$LOG")
-STATUS=$?
+STATUS=0
+OUTPUT=$(hermes chat -q "$PROMPT" -t terminal,web,file --oneshot --accept-hooks 2>&1 | tee -a "$LOG") || STATUS=$?
 
 if [ "$STATUS" -eq 0 ]; then
   hermes send --to discord --quiet "on-device-models research run complete: $(printf '%s' "$OUTPUT" | tail -n 8)"
